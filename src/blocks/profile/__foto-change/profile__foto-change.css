@@ -1,0 +1,17 @@
+.profile__foto-change {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 120px;
+  height: 120px;
+  background-color: rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  transition: opacity .3s linear;
+  cursor: pointer;
+}
+  
+.profile__foto-change:hover {
+ opacity: 1;
+ transition: opacity .3s linear;
+}

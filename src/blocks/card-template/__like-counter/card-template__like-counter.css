@@ -1,0 +1,8 @@
+.card-template__like-counter {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  height: 35px;
+  width: 22px;
+  justify-content: space-between;
+}

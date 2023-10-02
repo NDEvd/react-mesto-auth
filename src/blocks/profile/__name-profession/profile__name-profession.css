@@ -1,0 +1,15 @@
+.profile__name-profession {
+  max-width: 450px;
+}
+
+@media screen and (max-width: 800px) {
+  .profile__name-profession {
+    max-width: 350px;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .profile__name-profession {
+    max-width: 230px;
+  }
+}

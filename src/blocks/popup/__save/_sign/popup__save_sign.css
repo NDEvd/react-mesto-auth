@@ -1,0 +1,12 @@
+.popup__save_sign {
+    background: #FFFFFF;
+    color: #000000;
+    margin-top: 185px;
+  }
+  
+
+  @media screen and (max-width: 800px) {
+    .popup__save_sign {
+      margin-top: 142px;
+    }
+  }
