@@ -2,8 +2,9 @@ import { useContext } from 'react'
 import pensil from '../images/profile-pensil.svg'
 import avatarPensil from '../images/avatar-pensil.svg'
 import { CurrentUserContext } from '../contexts/CurrentUserContext'
+import Card from "./Card"
 
-export default function Main({ onClickAvatar, onClickChange, onClickAdd, children }) {
+export default function Main({ onClickAvatar, onClickChange, onClickAdd, handleCardClick,  handleCardDelete,  handleCardLike, cards }) {
 
   const currentUser = useContext(CurrentUserContext);
 
@@ -27,7 +28,19 @@ export default function Main({ onClickAvatar, onClickChange, onClickAdd, childre
     </section>
     <section className="content">
       <ul className="card-template" id="card-template">
-        {children}
+        {cards.map((card) => (
+          <Card key={card._id}
+            cardId={card._id}
+            cardLink={card.link}
+            cardName={card.name}
+            cardOwnerId={card.owner._id}
+            likes={card.likes.length}
+            allLikes={card.likes}
+            onCardClick={handleCardClick}
+            onCardDeleteClick={handleCardDelete}
+            onCardLike={handleCardLike}
+          />
+        ))}
       </ul>
     </section> 
   </main>

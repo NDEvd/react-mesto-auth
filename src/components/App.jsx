@@ -6,7 +6,7 @@ import api from '../utils/Api'
 
 import Header from './Header'
 import Main from './Main'
-import Card from "./Card"
+
 import Footer from './Footer'
 import ProtectedRouteElement from './ProtectedRouteElement'
 import Register from './Register'
@@ -50,68 +50,54 @@ function App() {
       }
     })
   }
-  
+  const token = localStorage.getItem('jwt');
   useEffect(() => {
-    const token = localStorage.getItem('jwt');
     firstAuth(token);
-    console.log(token);
   }, [])
 
-  
   useEffect(() => {
     if (loggedIn) navigate('/');
   }, [loggedIn]);
 
-  // const onRegister = ( password, email ) => {
-  //   return auth.register(password, email).then((res) => {
-  //     if (!res || res.statusCode === 400) throw new Error('Что-то пошло не так');
-  //     return res;
-  //   });
-  // };
-
   const handleRegister = ( password, email ) => {
-    return auth.register(password, email).then((res) => {
-      if (!res || res.statusCode === 400) throw new Error('Что-то пошло не так');
-      //  setIsErrorRegister(true);
-       if (res.jwt) {
+    return auth.register(password, email)
+    .then((res) => {
+      if (!res.data || res.statusCode === 400) {
+        setIsErrorRegister(true);
+        throw new Error('Что-то пошло не так');
+      }
+      if (res.data) {
         setIsSucsesRegister(true);
         navigate('/sign-in');
         return res;
-       }
-      });
+      }
+    })
+    .catch((err) => setMessage(err.message || 'Что-то пошло не так'));
   }
 
-  // const onLogin = ({ password, email }) => {
-  //   return auth.authorize(password, email).then((res) => {
-  //     if (!res) throw new Error('Неправильные имя пользователя или пароль');
-  //     if (res.jwt) {
-  //       setLoggedIn(true);
-  //       localStorage.setItem('jwt', res.jwt);
-  //     }
-  //   });
-  // };
+  const handleLogin = ( password, email ) => {
+    return auth.authorize(password, email)
+    .then((res) => {
+      if (!res) throw new Error('Неправильные имя пользователя или пароль');
+      if (res.token) {
+        setLoggedIn(true);
+        setEmail(email);
+        localStorage.setItem('jwt', res.token);
+        navigate('/')
+      }
+    })
+    .catch((err) => setMessage(err.message || 'Что-то пошло не так'));
+  }
 
-const handleLogin = ( password, email ) => {
-    return auth.authorize(password, email).then((res) => {
-    if (!res) throw new Error('Неправильные имя пользователя или пароль');
-    if (res.token) {
-      setLoggedIn(true);
-      console.log(loggedIn);
-      setEmail(email);
-      console.log(email);
-      localStorage.setItem('jwt', res.token);
-      navigate('/')
-    }
-  })
-  // .then(() => {
-  //   debugger;
-  // })
-}
-
+  const handleExit = () => {
+    localStorage.removeItem('jwt');
+  }
 
   useEffect(() => {
-    fetchInfo();
-  }, []);
+    if (token) {
+      fetchInfo();
+    }
+  }, [token]);
 
   const fetchInfo = function () {
     api
@@ -149,7 +135,6 @@ const handleLogin = ( password, email ) => {
   }
 
   function handleCardLike(card) {
-    
     const isLiked = card.likes.some((i) => i._id === currentUser._id);
     api
     .changeLikeCardStatus(card._id, !isLiked)
@@ -199,72 +184,65 @@ const handleLogin = ( password, email ) => {
   }
   
   return (
-      <div className="sticky-footer">
-        <CurrentUserContext.Provider value={currentUser}>
-        <Routes>
-          <Route path="/" element={<ProtectedRouteElement element={
-            <>
-            <Header action={email} />
-            <Main 
-              onClickAvatar={handleEditAvatarPopupOpen}
-              onClickChange={handleEditProfilePopupOpen} 
-              onClickAdd={handleAddPlacePopupOpen}
-              children={
-                cards.map((card) => (
-                <Card key={card._id}
-                  cardId={card._id}
-                  cardLink={card.link}
-                  cardName={card.name}
-                  cardOwnerId={card.owner._id}
-                  likes={card.likes.length}
-                  allLikes={card.likes}
-                  onCardClick={handleCardClick}
-                  onCardDeleteClick={handleCardDelete}
-                  onCardLike={handleCardLike}
-                />))
-              }
-            />
-            </>
-          } />} />
-          <Route path="/sign-up" element={<><Header link='/sign-in' action='Войти' /><Register onRegister={handleRegister} /></>} />
-          <Route path="/sign-in" element={<><Header link='/sign-up' action='Регистрация'  /><Login onLogin={handleLogin} /></>} />
-        </Routes>
-        <Footer/>
-        
-        
-        <EditProfilePopup isOpen={isEditProfilePopupOpen}
-          onClose={closeAllPopups}
-          onUpdateUser={handleUpdateUser} 
-        /> 
-        
-        <EditAvatarPopup isOpen={isEditAvatarPopupOpen}
-          onClose={closeAllPopups}
-          onUpdateAvatar={handleUpdateAvatar}
+    <div className="sticky-footer">
+      <CurrentUserContext.Provider value={currentUser}>
+      <Header email={email} onClick={handleExit} />
+      <Routes>
+        <Route path="/" 
+          element={<ProtectedRouteElement
+          loggedIn={loggedIn} 
+          onClickAvatar={handleEditAvatarPopupOpen}
+          onClickChange={handleEditProfilePopupOpen} 
+          onClickAdd={handleAddPlacePopupOpen}
+          handleCardClick={handleCardClick}
+          handleCardDelete={handleCardDelete}
+          handleCardLike={handleCardLike}
+          cards={cards}
+          element={Main}
+          />}
         />
+        <Route path="/sign-up" 
+          element={<Register onRegister={handleRegister} />}
+        />
+        <Route path="/sign-in"
+          element={<Login onLogin={handleLogin} />}
+        />
+      </Routes>
+      <Footer />
+        
+      <EditProfilePopup isOpen={isEditProfilePopupOpen}
+        onClose={closeAllPopups}
+        onUpdateUser={handleUpdateUser} 
+      /> 
+        
+      <EditAvatarPopup isOpen={isEditAvatarPopupOpen}
+        onClose={closeAllPopups}
+        onUpdateAvatar={handleUpdateAvatar}
+      />
 
-        <AddPlacePopup isOpen={isAddPlacePopupOpen}
-          onClose={closeAllPopups}
-          onAddPlace={handleAddPlaceSubmit}
-        />
+      <AddPlacePopup isOpen={isAddPlacePopupOpen}
+        onClose={closeAllPopups}
+        onAddPlace={handleAddPlaceSubmit}
+      />
      
-        <ImagePopup card={selectedCard}
-          onClose={closeAllPopups} 
-        />
+      <ImagePopup card={selectedCard}
+        onClose={closeAllPopups} 
+      />
 
-        <RegisterPopup isOpen={isSucsesRegister}
-          onClose={closeAllPopups}
-          img={reg}
-          text='Вы успешно зарегистрировались!'
-        />
+      <RegisterPopup isOpen={isSucsesRegister}
+        onClose={closeAllPopups}
+        img={reg}
+        text='Вы успешно зарегистрировались!'
+      />
 
-        <RegisterPopup isOpen={isErrorRegister}
-          onClose={closeAllPopups}
-          img={regError}
-          text='Что-то пошло не так! Попробуйте ещё раз.'
-        />
+      <RegisterPopup isOpen={isErrorRegister}
+        onClose={closeAllPopups}
+        img={regError}
+        text='Что-то пошло не так! Попробуйте ещё раз.'
+      />
 
-        </CurrentUserContext.Provider>
-      </div>
+      </CurrentUserContext.Provider>
+    </div>
   )
 }
 
