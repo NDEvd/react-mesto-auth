@@ -1,8 +1,9 @@
 import logo from '../images/logo.svg'
 import { Link } from 'react-router-dom'
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom'
 
-export default function Header({ email, onClick }) {
+
+export default function Header({ onClick }) {
 
   return (
     <div  className="header">
@@ -14,7 +15,7 @@ export default function Header({ email, onClick }) {
       <Routes>
         <Route path="/" element={
           <div className="header__email-exit">
-            <p className="header__login-link">{email}</p>
+            <p className="header__login-link">{localStorage.getItem('email')}</p>
             <Link className="header__login-link"
               to='/sign-in'
               onClick={onClick}>

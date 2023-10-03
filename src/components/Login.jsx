@@ -1,22 +1,14 @@
 import { useEffect } from "react"
-import { useNavigate } from 'react-router-dom'
 import { useForm } from "../hooks/useForm"
 
 export default function Login ({ onLogin }) {
 
-  const {values, handleChange, setValues} = useForm({});  
-  const navigate = useNavigate();
+  const {values, handleChange, setValues} = useForm({});
   
   useEffect(() => {
     setValues({email: '', password: ''});
   }, []);
     
-  useEffect(() => {
-    if (localStorage.getItem('jwt')) {
-      navigate('/');
-    }
-  }, []);
-
   const handleSubmit  = (e) => {
     e.preventDefault();
     if (values.email && values.password) {

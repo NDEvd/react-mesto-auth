@@ -38,19 +38,12 @@ function App() {
   const [currentUser, setCurrentUser] = useState({ name: 'Жак-Ив Кусто', about: 'Исследователь океана', avatar: avatar});
   
   const [cards, setCards] = useState([]);
-
-  const [email, setEmail] = useState('');
-  
-  // useEffect(() => {
-  //   setEmail(email);
-  // }, []);
   
   const firstAuth = (jwt) => {
     return auth.checkToken(jwt)
     .then(() => {
       if (jwt) {
         setLoggedIn(true);
-        setEmail(email);
         navigate('/');
       }
     })
@@ -69,12 +62,6 @@ function App() {
   const handleRegister = ( password, email ) => {
     return auth.register(password, email)
     .then((res) => {
-      console.log(res);
-      if (!res.data || res.statusCode === 400) {
-        setIsTooltipOpen(true);
-        setIsTooltipSuccess(false);
-        throw new Error('Что-то пошло не так');
-      }
       if (res.data) {
         setIsTooltipOpen(true);
         setIsTooltipSuccess(true);
@@ -82,17 +69,20 @@ function App() {
         return res;
       }
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      setIsTooltipOpen(true);
+      setIsTooltipSuccess(false);
+      console.log(err);
+    })
   }
 
   const handleLogin = ( password, email ) => {
     return auth.authorize(password, email)
     .then((res) => {
-      // if (!res) throw new Error('Неправильные имя пользователя или пароль');
       if (res.token) {
         setLoggedIn(true);
-        setEmail(email);
         localStorage.setItem('jwt', res.token);
+        localStorage.setItem('email', email);
         navigate('/')
       }
     })
@@ -101,6 +91,7 @@ function App() {
 
   const handleExit = () => {
     localStorage.removeItem('jwt');
+    localStorage.removeItem('email');
   }
 
   useEffect(() => {
@@ -115,7 +106,6 @@ function App() {
       .then(([data, res]) => {
         setCurrentUser(data);
         setCards(res);
-        setEmail(email);
       })
       .catch((err) => console.log(err));
   }
@@ -212,7 +202,7 @@ function App() {
   return (
     <div className="sticky-footer">
       <CurrentUserContext.Provider value={currentUser}>
-      <Header email={email} onClick={handleExit} />
+      <Header onClick={handleExit} />
       <Routes>
         <Route path="/" 
           element={<ProtectedRouteElement
