@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Route, Routes } from 'react-router-dom';
 
 export default function Header({ email, onClick }) {
+
   return (
     <div  className="header">
       <img
@@ -19,17 +20,20 @@ export default function Header({ email, onClick }) {
               onClick={onClick}>
               Выйти
             </Link>
-          </div> } />
+          </div> 
+        } />
         <Route path="/sign-up" element={
           <Link className="header__login-link"
             to='/sign-in'>
             Войти
-          </Link> } />
+          </Link> 
+        } />
         <Route path="/sign-in" element={
           <Link className="header__login-link"
             to='/sign-up'>
             Регистрация
-          </Link> } />
+          </Link> 
+        } />
       </Routes>
     </div>
   )

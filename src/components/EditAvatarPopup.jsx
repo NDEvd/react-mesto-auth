@@ -22,13 +22,9 @@ export default function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar }) {
       buttonTittle='Сохранить'
       isOpen={isOpen} 
       onClose={onClose} 
-      onSubmit={handleSubmit}
-      children={ 
-        <>
-          <input className="popup__input" type='url' name='avatar' id='avatar' placeholder="Ссылка на аватар" ref={avatarLinkRef}/>
-          <span id="avatar-error" className="popup__error popup__error_visible" ></span>
-        </>
-      }
-    /> 
+      onSubmit={handleSubmit}>
+        <input className="popup__input" type='url' name='avatar' id='avatar' placeholder="Ссылка на аватар" ref={avatarLinkRef} required/>
+        <span id="avatar-error" className="popup__error popup__error_visible" ></span>
+    </PopupWithForm>
   )
 }

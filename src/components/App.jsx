@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import '../index.css'
 import * as auth from '../utils/auth.js';
 import api from '../utils/Api'
@@ -31,8 +31,8 @@ function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
-  const [isSucsesRegister, setIsSucsesRegister] = useState(false);
-  const [isErrorRegister, setIsErrorRegister] = useState(false);
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+  const [isTooltipSuccess, setIsTooltipSuccess] = useState(false);
 
   const [selectedCard, setSelectedCard] = useState(null);
   const [currentUser, setCurrentUser] = useState({ name: 'Жак-Ив Кусто', about: 'Исследователь океана', avatar: avatar});
@@ -41,19 +41,26 @@ function App() {
 
   const [email, setEmail] = useState('');
   
+  // useEffect(() => {
+  //   setEmail(email);
+  // }, []);
+  
   const firstAuth = (jwt) => {
-    return auth.checkToken(jwt).then(() => {
+    return auth.checkToken(jwt)
+    .then(() => {
       if (jwt) {
         setLoggedIn(true);
         setEmail(email);
         navigate('/');
       }
     })
+    .catch(err => console.log(err)) 
   }
-  const token = localStorage.getItem('jwt');
+  
   useEffect(() => {
+    const token = localStorage.getItem('jwt');
     firstAuth(token);
-  }, [])
+  }, [loggedIn])
 
   useEffect(() => {
     if (loggedIn) navigate('/');
@@ -62,23 +69,26 @@ function App() {
   const handleRegister = ( password, email ) => {
     return auth.register(password, email)
     .then((res) => {
+      console.log(res);
       if (!res.data || res.statusCode === 400) {
-        setIsErrorRegister(true);
+        setIsTooltipOpen(true);
+        setIsTooltipSuccess(false);
         throw new Error('Что-то пошло не так');
       }
       if (res.data) {
-        setIsSucsesRegister(true);
+        setIsTooltipOpen(true);
+        setIsTooltipSuccess(true);
         navigate('/sign-in');
         return res;
       }
     })
-    .catch((err) => setMessage(err.message || 'Что-то пошло не так'));
+    .catch((err) => console.log(err));
   }
 
   const handleLogin = ( password, email ) => {
     return auth.authorize(password, email)
     .then((res) => {
-      if (!res) throw new Error('Неправильные имя пользователя или пароль');
+      // if (!res) throw new Error('Неправильные имя пользователя или пароль');
       if (res.token) {
         setLoggedIn(true);
         setEmail(email);
@@ -86,7 +96,7 @@ function App() {
         navigate('/')
       }
     })
-    .catch((err) => setMessage(err.message || 'Что-то пошло не так'));
+    .catch((err) => console.log(err));
   }
 
   const handleExit = () => {
@@ -94,10 +104,10 @@ function App() {
   }
 
   useEffect(() => {
-    if (token) {
+    if (localStorage.getItem('jwt')) {
       fetchInfo();
     }
-  }, [token]);
+  }, [loggedIn]);
 
   const fetchInfo = function () {
     api
@@ -105,6 +115,7 @@ function App() {
       .then(([data, res]) => {
         setCurrentUser(data);
         setCards(res);
+        setEmail(email);
       })
       .catch((err) => console.log(err));
   }
@@ -130,9 +141,24 @@ function App() {
     setIsAddPlacePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
     setSelectedCard(null);
-    setIsSucsesRegister(false);
-    setIsErrorRegister(false);
+    setIsTooltipOpen(false);
   }
+
+  const isOpen = isEditAvatarPopupOpen || isEditProfilePopupOpen || isAddPlacePopupOpen || selectedCard || isTooltipOpen;
+
+  useEffect(() => {
+    function closeByEscape(evt) {
+      if(evt.key === 'Escape') {
+        closeAllPopups();
+      }
+    }
+    if(isOpen) {
+      document.addEventListener('keydown', closeByEscape);
+      return () => {
+        document.removeEventListener('keydown', closeByEscape);
+      }
+    }
+  }, [isOpen]);
 
   function handleCardLike(card) {
     const isLiked = card.likes.some((i) => i._id === currentUser._id);
@@ -207,6 +233,19 @@ function App() {
         <Route path="/sign-in"
           element={<Login onLogin={handleLogin} />}
         />
+        <Route path="/*"
+          element={ loggedIn ? ( 
+          <Navigate 
+            to='/'
+            replace
+          />
+          ) : (
+          <Navigate 
+            to="/sign-in" 
+            replace
+          />
+          )}
+        />
       </Routes>
       <Footer />
         
@@ -229,16 +268,10 @@ function App() {
         onClose={closeAllPopups} 
       />
 
-      <RegisterPopup isOpen={isSucsesRegister}
+      <RegisterPopup isOpen={isTooltipOpen}
         onClose={closeAllPopups}
-        img={reg}
-        text='Вы успешно зарегистрировались!'
-      />
-
-      <RegisterPopup isOpen={isErrorRegister}
-        onClose={closeAllPopups}
-        img={regError}
-        text='Что-то пошло не так! Попробуйте ещё раз.'
+        img={`${isTooltipSuccess ? reg : regError}`}
+        text={`${isTooltipSuccess ? 'Вы успешно зарегистрировались!' : 'Что-то пошло не так! Попробуйте ещё раз.'}`}
       />
 
       </CurrentUserContext.Provider>

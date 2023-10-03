@@ -1,23 +1,14 @@
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { useNavigate } from 'react-router-dom'
+import { useForm } from "../hooks/useForm"
 
 export default function Login ({ onLogin }) {
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-    
+  const {values, handleChange, setValues} = useForm({});  
   const navigate = useNavigate();
   
-  const onChangeEmail = function (e) {
-    setEmail(e.target.value);
-  };
-  const onChangePassword = function (e) {
-    setPassword(e.target.value);
-  };
-  
   useEffect(() => {
-    setEmail('');
-    setPassword('');
+    setValues({email: '', password: ''});
   }, []);
     
   useEffect(() => {
@@ -28,11 +19,10 @@ export default function Login ({ onLogin }) {
 
   const handleSubmit  = (e) => {
     e.preventDefault();
-    if (email && password) {
-      onLogin( password, email )
+    if (values.email && values.password) {
+      onLogin( values.password, values.email )
       .then(() => {
-        setEmail('');
-        setPassword('');
+        setValues({email: '', password: ''});
       })
     }
   }
@@ -41,9 +31,9 @@ export default function Login ({ onLogin }) {
     <div className="popup__container popup__container_sign" > 
       <h2 className="popup__label popup__label_sign">Вход</h2>  
       <form className="popup__form" method="get" onSubmit={handleSubmit}> 
-        <input className="popup__input popup__input_sign" type="email" name="email" id="email" required value={email} onChange={onChangeEmail} placeholder="Email" minLength="2" maxLength="30"/>
+        <input className="popup__input popup__input_sign" type="email" name="email" id="email" required value={values.email} onChange={handleChange} placeholder="Email" minLength="2" maxLength="30"/>
         <span id="email-error" className="popup__error popup__error_visible" ></span>
-        <input className="popup__input popup__input_sign" type="password" name="password" id="password" required value={password} onChange={onChangePassword} placeholder="Пароль" />
+        <input className="popup__input popup__input_sign" type="password" name="password" id="password" required value={values.password} onChange={handleChange} placeholder="Пароль" />
         <span id="password-error" className="popup__error popup__error_visible"></span>
         <button className="popup__save popup__save_sign" type="submit" id="register">Войти</button> 
       </form>

@@ -1,30 +1,22 @@
 import { CurrentUserContext } from '../contexts/CurrentUserContext'
-import { useState, useEffect, useContext } from "react"
+import { useEffect, useContext } from "react"
 import PopupWithForm from "./PopupWithForm"
+import { useForm } from "../hooks/useForm"
 
 export default function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
 
   const currentUser = useContext(CurrentUserContext);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-
-  const onChangeName = function (e) {
-    setName(e.target.value);
-  };
-  const onChangeAbout = function (e) {
-    setDescription(e.target.value);
-  };
+  
+  const {values, handleChange, setValues} = useForm({});
 
   useEffect(() => {
-    setName(currentUser?.name);
-    setDescription(currentUser?.about);
-  }, [currentUser]);
+    setValues({name: currentUser?.name, about: currentUser?.about});
+  }, [currentUser, isOpen]);
 
   function handleSubmit(e) {
     e.preventDefault();
-    const data = { name, about: description }
+    const data = { name: values.name, about: values.about }
     onUpdateUser(data);
-    console.log(data);
   }
   
   return (
@@ -33,15 +25,11 @@ export default function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
       buttonTittle='Сохранить' 
       isOpen={isOpen} 
       onClose={onClose}
-      onSubmit={handleSubmit}
-      children={ 
-        <> 
-          <input className="popup__input" type="text" name="name" id="name" value={name} placeholder="Ваше имя" onChange={onChangeName} minLength="2" maxLength="40" />
-          <span id="name-error" className="popup__error popup__error_visible" ></span>
-          <input className="popup__input" type="text" name="about" id="about" value={description} placeholder="Ваша профессия" onChange={onChangeAbout} minLength="2" maxLength="40" />
-          <span id="about-error" className="popup__error popup__error_visible"></span>
-        </> 
-      }
-    /> 
+      onSubmit={handleSubmit}>
+        <input className="popup__input" type="text" name="name" id="name" value={values.name} placeholder="Ваше имя" onChange={handleChange} minLength="2" maxLength="40" required />
+        <span id="name-error" className="popup__error popup__error_visible" ></span>
+        <input className="popup__input" type="text" name="about" id="about" value={values.about} placeholder="Ваша профессия" onChange={handleChange} minLength="2" maxLength="40" required />
+        <span id="about-error" className="popup__error popup__error_visible"></span>
+    </PopupWithForm>
   )
 }

@@ -1,44 +1,32 @@
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import PopupWithForm from "./PopupWithForm" 
+import { useForm } from "../hooks/useForm"
 
 export default function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
-
-  const [name, setName] = useState('');
-  const [link, setLink] = useState('');
-
-    const onChangeName = function (e) {
-      setName(e.target.value);
-    };
-    const onChangeLink = function (e) {
-      setLink(e.target.value);
-    };
-
-    function handleSubmit(e) {
-      e.preventDefault();
-      const card = { name, link }
-      onAddPlace(card);
-    }
-
-    useEffect(() => {
-      setName('');
-      setLink('');
-    }, [isOpen]);
   
-    return (
-      <PopupWithForm id='add-button'
+  const {values, handleChange, setValues} = useForm({});
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    const card = { name: values.name, link: values.place }
+    onAddPlace(card);
+  }
+
+  useEffect(() => {
+    setValues({name: '', place: ''});
+  }, [isOpen]);
+  
+  return (
+    <PopupWithForm id='add-button'
       title='Новое место' 
       buttonTittle='Создать' 
       isOpen={isOpen} 
       onClose={onClose} 
-      onSubmit={handleSubmit}
-        children={ 
-          <>
-            <input className="popup__input" type="text" name="name" id="name-img" required value={name} onChange={onChangeName} placeholder="Название" minLength="2" maxLength="30"/>
-            <span id="name-img-error" className="popup__error popup__error_visible" ></span>
-            <input className="popup__input" type="url" name="place" id="place" required value={link} onChange={onChangeLink} placeholder="Ссылка на картинку" />
-            <span id="place-error" className="popup__error popup__error_visible"></span>
-          </>
-        }
-      /> 
-    )
-  }
+      onSubmit={handleSubmit}>
+        <input className="popup__input" type="text" name="name" id="name-img" value={values.name} onChange={handleChange} placeholder="Название" minLength="2" maxLength="30" required />
+        <span id="name-img-error" className="popup__error popup__error_visible" ></span>
+        <input className="popup__input" type="url" name="place" id="place" value={values.place} onChange={handleChange} placeholder="Ссылка на картинку" required />
+        <span id="place-error" className="popup__error popup__error_visible"></span>
+    </PopupWithForm>
+  )
+}
