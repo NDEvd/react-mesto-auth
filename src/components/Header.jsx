@@ -14,7 +14,7 @@ export default function Header({ onClick }) {
     <div>
       {isOpen && <div className="header-mobil">
         <p className="header-mobil__login-link">{localStorage.getItem('email')}</p>
-        <Link className="header-mobil__login-link"
+        <Link className="header-mobil__login-link header-mobil__login-link_exit"
           to='/sign-in'
           onClick={onClick}>
           Выйти
@@ -29,7 +29,7 @@ export default function Header({ onClick }) {
       <Routes>
         <Route path="/" element={
           <div >
-          <label className="opasity">
+          <label className="hamburger-opasity">
             <input type="checkbox" />
             <span className="menu" onClick={handlToggleClick}> <span className="hamburger"></span> </span>
           </label>

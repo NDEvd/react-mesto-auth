@@ -11,6 +11,8 @@
   font-size: 40px;
   justify-self: flex-end;
   box-sizing: border-box;
+  opacity: 1;
+  transition: opacity .3s linear;
 }
 
 @media screen and (max-width: 980px) {

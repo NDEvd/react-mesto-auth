@@ -8,4 +8,11 @@
   color: white;
   text-decoration: none;
   margin-top: 12px;
+  opacity: 1;
+  transition: opacity .3s linear;
+}
+
+.header-mobil__login-link_exit:hover {
+  opacity: .6;
+  transition: opacity .3s linear;
 }

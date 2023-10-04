@@ -1,9 +1,9 @@
-  .opasity {
+  .hamburger-opasity {
     display: none;
   }
 
   @media screen and (max-width: 800px) {
-    .opasity  {
+    .hamburger-opasity  {
         display: block; 
     }
   }
@@ -54,20 +54,32 @@
   label input:checked + .menu .hamburger {
     -webkit-transform: rotate(45deg);
     transform: rotate(45deg);
-    
   }
   
   label input:checked + .menu .hamburger:after {
     -webkit-transform: rotate(90deg);
     transform: rotate(90deg);
     bottom: 0;
-    
   }
   
   label input:checked + .menu .hamburger:before {
     -webkit-transform: rotate(90deg);
     transform: rotate(90deg);
-    top: 0;
-    
+    top: 0; 
+  }
+
+  label .hamburger:hover {
+    opacity: .6;
+    transition: opacity .3s linear;
+  }
+  
+  label .hamburger:before:hover { 
+    opacity: .6;
+    transition: opacity .3s linear; 
+  }
+  
+  label .hamburger:after:hover { 
+    opacity: .6;
+    transition: opacity .3s linear; 
   }
   
