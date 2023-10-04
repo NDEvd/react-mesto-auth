@@ -7,7 +7,7 @@ export default function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
 
   const currentUser = useContext(CurrentUserContext);
   
-  const {values, handleChange, setValues} = useForm({});
+  const {values, handleChange, setValues} = useForm({name: currentUser?.name, about: currentUser?.about});
 
   useEffect(() => {
     setValues({name: currentUser?.name, about: currentUser?.about});

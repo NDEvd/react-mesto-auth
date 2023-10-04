@@ -4,7 +4,7 @@ import { useForm } from "../hooks/useForm"
 
 export default function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
   
-  const {values, handleChange, setValues} = useForm({});
+  const {values, handleChange, setValues} = useForm({name: '', place: ''});
 
   function handleSubmit(e) {
     e.preventDefault();

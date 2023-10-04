@@ -22,7 +22,6 @@ import avatar from '../images/Avatar2.png'
 import reg from '../images/icon-reg.svg'
 import regError from '../images/icon-reg-error.svg'
 
-
 function App() {
 
   const [loggedIn, setLoggedIn] = useState(false);
@@ -52,8 +51,8 @@ function App() {
   
   useEffect(() => {
     const token = localStorage.getItem('jwt');
-    firstAuth(token);
-  }, [loggedIn])
+    if (token) firstAuth(token)
+  }, []);
 
   useEffect(() => {
     if (loggedIn) navigate('/');
@@ -95,10 +94,8 @@ function App() {
   }
 
   useEffect(() => {
-    if (localStorage.getItem('jwt')) {
-      fetchInfo();
-    }
-  }, [loggedIn]);
+    if (loggedIn) fetchInfo()
+  }, [loggedIn])
 
   const fetchInfo = function () {
     api

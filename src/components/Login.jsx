@@ -3,7 +3,7 @@ import { useForm } from "../hooks/useForm"
 
 export default function Login ({ onLogin }) {
 
-  const {values, handleChange, setValues} = useForm({});
+  const {values, handleChange, setValues} = useForm({email: '', password: ''});
   
   useEffect(() => {
     setValues({email: '', password: ''});

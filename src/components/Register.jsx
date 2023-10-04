@@ -4,7 +4,7 @@ import { useForm } from "../hooks/useForm"
 
 export default function Register({ onRegister }) {
 
-  const {values, handleChange, setValues} = useForm({});
+  const {values, handleChange, setValues} = useForm({email: '', password: ''});
   const navigate = useNavigate();
   
   const handleSubmit = async (e) => {

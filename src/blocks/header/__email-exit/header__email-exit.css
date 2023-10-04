@@ -3,3 +3,9 @@
   flex-direction: row;
   column-gap: 20px;
 }
+
+@media screen and (max-width: 800px) {
+  .header__email-exit {
+    display: none;
+  }
+}
